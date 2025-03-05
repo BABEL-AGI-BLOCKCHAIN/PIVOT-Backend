@@ -1,13 +1,13 @@
 import listenToCreateTopic from './createTopic.event.js';
-import getHistoricTopics from './getHistoric.event.js';
-import cron from 'node-cron';
+import getHistoricTopics from './getHistoricTopics.event.js';
+import listenToInvest from './invest.event.js';
+import getHistoricInvests from './getHistoricInvests.event.js';
 
 const initEventListeners = () => {
   listenToCreateTopic();
-  getHistoricTopics("CreateTopic");
-  cron.schedule('0 */2 * * * *', async () => {
-    await getHistoricTopics("CreateTopic");
-  });
+  getHistoricTopics();
+  listenToInvest();
+  getHistoricInvests();
 };
 
 export default initEventListeners;

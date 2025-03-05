@@ -1,3 +1,4 @@
+import { Decimal } from '@prisma/client/runtime/library';
 import { contract, provider } from '../utils/provider.js';
 import axios from 'axios';
 
@@ -12,7 +13,7 @@ const listenToCreateTopic = async () => {
       await axios.post(`${baseURL}/api/v1/topic/createTopic`, {
         promoter,
         topicId: topicId.toString(),
-        investment: BigInt(investment),
+        investment: Decimal(investment),
         position: Number(position),
         tokenAddress,
         nonce: nonce.toString(),
