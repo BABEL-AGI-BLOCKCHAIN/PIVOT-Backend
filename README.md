@@ -1,16 +1,22 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
 ## Getting Started
 
 First, change the .env.example to .env and set the variables and then run the development server:
 
+Using Docker
+```bash
+Docker compose up --build
+```
+
+OR
+
 setup postgres in your machine and then
 
-To connect to pg server
+To connect to pg server or after any change in the prisma.schema file
 ```bash
 npx prisma migrate dev --name init --skip-seed
 npx prisma db push
 ```
+
 ```bash
 npm i
 npm run dev

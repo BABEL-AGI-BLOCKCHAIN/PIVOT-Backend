@@ -1,10 +1,12 @@
 import axios from "axios";
 import { provider, contract } from "../utils/provider.js";
+import { safeDecimal } from "../utils/validateDecimal.js";
 
 const MAX_BLOCK_RANGE = 50000;
 const baseURL = process.env.BASE_URL || "http://localhost:5000";
 
-async function processHistoricTopics(eventName) {
+async function processHistoricTopics() {
+  const eventName = "CreateTopic";
     try {
       const getResponse = await axios.get(`${baseURL}/api/v1/event/getEventSync?eventName=${eventName}`);
       const lastBlock = getResponse.data.lastBlock;
@@ -27,11 +29,12 @@ async function processHistoricTopics(eventName) {
           try {
             const { chainId } = await provider.getNetwork();
             const transactionHash = e.transactionHash || e.log.transactionHash;
+            const decimalInvestment = safeDecimal(investment);
       
             await axios.post(`${baseURL}/api/v1/topic/createTopic`, {
               promoter,
               topicId: topicId.toString(),
-              investment: BigInt(investment),
+              investment: decimalInvestment,
               position: Number(position),
               tokenAddress,
               nonce: nonce.toString(),

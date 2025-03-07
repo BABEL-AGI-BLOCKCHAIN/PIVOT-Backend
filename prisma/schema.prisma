@@ -8,30 +8,49 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  walletAddress String    @unique
+  walletAddress String        @id @unique
   username      String?
   twitterHandle String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
   topics        CreateTopic[]
   comments      Comment[]
+  invests       Invest[]
+}
+
+model Topic {
+  id              String       @id
+  totalInvestment Decimal      @default(0) @db.Decimal(80, 18)
+  currentPosition Int
+  comments        Comment[]
+  metadata        Metadata?
+  invests         Invest[]
+  createTopic     CreateTopic?
+
 }
 
 model CreateTopic {
-  id              String    @id
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  investment      BigInt    @default(0)
-  promoter        User?     @relation(fields: [promoterId], references: [id])
-  promoterId      Int?
+  id              String   @id
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  investment      Decimal  @default(0) @db.Decimal(80, 18)
+  promoter        User    @relation(fields: [promoterId], references: [walletAddress])
+  promoterId      String
   position        Int
   tokenAddress    String
   nonce           String
   transactionHash String
   chainId         String
-  comments        Comment[]
-  metadata        Metadata?
+  topic           Topic    @relation(fields: [id], references: [id])
+}
+
+model Metadata {
+  topicId      String  @id
+  topicTitle   String
+  topicContent String
+  imageUrl     String?
+  topicHash    String
+  topic        Topic   @relation(fields: [topicId], references: [id])
 }
 
 model Comment {
@@ -39,18 +58,27 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
-  topic     CreateTopic?   @relation(fields: [topicId], references: [id])
+  author    User    @relation(fields: [authorId], references: [walletAddress])
+  authorId  String
+  topic     Topic?   @relation(fields: [topicId], references: [id])
   topicId   String?
 }
 
-model Metadata {
-  topicId       String @id
-  topic_title   String
-  topic_content String
-  image_url     String
-  topic         CreateTopic  @relation(fields: [topicId], references: [id])
+
+model Invest {
+  id              Int      @id @default(autoincrement())
+  investor        String
+  topicId         String
+  amount          Decimal  @db.Decimal(80, 18)
+  position        Int
+  nonce           String
+  user            User     @relation(fields: [investor], references: [walletAddress])
+  topic           Topic    @relation(fields: [topicId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  transactionHash String
+  chainId         String
+  blockNumber     BigInt
 }
 
 model EventSync {
